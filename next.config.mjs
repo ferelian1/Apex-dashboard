@@ -9,10 +9,12 @@
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Ensure Prisma client is not bundled into the serverless function bundle.
-  // Required for the binary engine to resolve correctly in Vercel's Lambda environment.
-  // Requirement 13.6
-  serverExternalPackages: ['@prisma/client', 'prisma'],
+  // Next.js 14.x uses experimental.serverComponentsExternalPackages
+  // (renamed to serverExternalPackages in Next.js 15+)
+  // Ensures Prisma's binary engine resolves correctly in Vercel's Lambda environment.
+  experimental: {
+    serverComponentsExternalPackages: ['@prisma/client', 'prisma'],
+  },
 
   images: {
     remotePatterns: [
