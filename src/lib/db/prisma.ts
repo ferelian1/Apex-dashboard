@@ -1,16 +1,18 @@
 import { PrismaClient } from '@prisma/client';
 
-// Validate DATABASE_URL before any instantiation
-if (!process.env.DATABASE_URL) {
-  throw new Error('DATABASE_URL environment variable is not set');
-}
-
 const isDev = process.env.NODE_ENV !== 'production';
 
 // Unique symbol key for storing the singleton on globalThis in development
 const prismaSymbol = Symbol.for('prisma.client');
 
 function createPrismaClient(): PrismaClient {
+  // Validate at instantiation time (runtime), not at module load time (build time).
+  // This prevents Next.js static analysis from failing during `next build`
+  // when DATABASE_URL is not available in the build environment.
+  if (!process.env.DATABASE_URL) {
+    throw new Error('DATABASE_URL environment variable is not set');
+  }
+
   return new PrismaClient({
     log: isDev ? ['query', 'info', 'warn'] : ['error'],
   });
