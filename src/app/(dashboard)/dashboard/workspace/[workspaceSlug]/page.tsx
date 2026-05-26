@@ -1,8 +1,5 @@
 /**
- * Board list page — shows all boards for a workspace.
- *
- * Server Component that queries boards for the given workspace slug
- * and renders them as cards.
+ * Board list page — maps to /dashboard/workspace/[workspaceSlug]
  *
  * Requirements: 1.5, 9.4
  */

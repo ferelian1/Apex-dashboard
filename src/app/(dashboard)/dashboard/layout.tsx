@@ -1,5 +1,5 @@
 /**
- * Dashboard shell layout.
+ * Dashboard shell layout — maps to /dashboard/*
  *
  * Wraps all dashboard pages with Navbar, Sidebar, and DemoModeBanner.
  * Fetches the current user's workspaces (with boards) server-side for the sidebar.
@@ -22,11 +22,9 @@ export default async function DashboardLayout({
   const { userId } = await auth();
   if (!userId) redirect('/sign-in');
 
-  // Resolve DB user
   const user = await db.user.findUnique({ where: { clerkId: userId } });
   if (!user) redirect('/sign-in');
 
-  // Fetch workspaces with boards for the sidebar
   const memberships = await db.workspaceMember.findMany({
     where: { userId: user.id },
     include: {
@@ -44,7 +42,6 @@ export default async function DashboardLayout({
     <div className="flex flex-col h-screen overflow-hidden">
       <DemoModeBanner />
       <Navbar />
-      {/* Sidebar hidden on mobile (< md), visible on md+ — Req 12.3 */}
       <div className="flex flex-1 overflow-hidden">
         <div className="hidden md:block">
           <Sidebar workspaces={workspaces} />

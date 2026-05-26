@@ -1,8 +1,5 @@
 /**
- * Workspace list page — the main dashboard landing page.
- *
- * Server Component that queries all workspaces for the current user
- * and renders them as cards with board counts.
+ * Workspace list page — maps to /dashboard
  *
  * Requirements: 1.5
  */
