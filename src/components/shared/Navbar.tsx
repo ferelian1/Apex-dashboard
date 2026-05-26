@@ -30,7 +30,7 @@ export default function Navbar({ workspaceName }: NavbarProps) {
           </>
         )}
       </div>
-      <UserButton fallbackRedirectUrl="/sign-in" />
+      <UserButton afterSignOutUrl="/sign-in" />
     </header>
   );
 }
