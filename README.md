@@ -2,7 +2,7 @@
 
 A production-grade, enterprise-ready **Collaborative Kanban Task Management Dashboard** built with Next.js 14+, TypeScript, Tailwind CSS, Clerk Auth, Supabase, and Prisma. Inspired by Jira and Trello.
 
-> **Live Demo** — [apex-dashboard.vercel.app](https://apex-dashboard.vercel.app) · Click **"Log In as Recruiter Guest"** for instant access — no account needed.
+> **Live Demo** — [apex-dashboard.vercel.app](https://apex-dashboard-olive.vercel.app/) · Click **"Log In as Recruiter Guest"** for instant access — no account needed.
 
 ---
 
