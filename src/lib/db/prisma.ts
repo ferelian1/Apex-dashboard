@@ -2,38 +2,35 @@ import { PrismaClient } from '@prisma/client';
 
 const isDev = process.env.NODE_ENV !== 'production';
 
-// Unique symbol key for storing the singleton on globalThis in development
+// Use a global symbol so the instance survives hot-reloads in dev
+// AND is reused across invocations in the same Lambda container in production.
 const prismaSymbol = Symbol.for('prisma.client');
 
 function createPrismaClient(): PrismaClient {
-  // Validate at instantiation time (runtime), not at module load time (build time).
-  // This prevents Next.js static analysis from failing during `next build`
-  // when DATABASE_URL is not available in the build environment.
   if (!process.env.DATABASE_URL) {
     throw new Error('DATABASE_URL environment variable is not set');
   }
 
   return new PrismaClient({
-    log: isDev ? ['query', 'info', 'warn'] : ['error'],
+    log: isDev ? ['warn', 'error'] : ['error'],
+    // Limit connections — critical for serverless to avoid exhausting PgBouncer
+    datasources: {
+      db: {
+        url: process.env.DATABASE_URL,
+      },
+    },
   });
 }
 
-let db: PrismaClient;
+// Store on globalThis so the same instance is reused across:
+// - Hot-reloads in development
+// - Multiple requests in the same warm Lambda container in production
+const globalWithPrisma = globalThis as typeof globalThis & {
+  [prismaSymbol]?: PrismaClient;
+};
 
-if (process.env.NODE_ENV === 'production') {
-  // In production, always create a fresh instance (no global cache needed)
-  db = createPrismaClient();
-} else {
-  // In development, reuse the instance stored on globalThis to survive hot-reloads
-  const globalWithPrisma = globalThis as typeof globalThis & {
-    [prismaSymbol]?: PrismaClient;
-  };
-
-  if (!globalWithPrisma[prismaSymbol]) {
-    globalWithPrisma[prismaSymbol] = createPrismaClient();
-  }
-
-  db = globalWithPrisma[prismaSymbol];
+if (!globalWithPrisma[prismaSymbol]) {
+  globalWithPrisma[prismaSymbol] = createPrismaClient();
 }
 
-export { db };
+export const db = globalWithPrisma[prismaSymbol];
