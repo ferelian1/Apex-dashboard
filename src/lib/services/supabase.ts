@@ -1,27 +1,32 @@
 /**
  * Supabase client singleton for Realtime subscriptions.
  *
- * This client is used ONLY for Supabase Realtime (WebSocket) subscriptions
- * that broadcast Postgres change events to connected board clients.
- * All database queries and mutations go through Prisma (src/lib/db/prisma.ts).
- *
- * Uses the public anon key — safe for client-side use since Supabase RLS
- * policies control data access at the database level.
+ * Used ONLY for Supabase Realtime (WebSocket) subscriptions.
+ * All database queries go through Prisma.
  */
 
-import { createClient } from '@supabase/supabase-js';
+import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
-if (!supabaseUrl || !supabaseAnonKey) {
-  throw new Error(
-    'Missing Supabase environment variables: NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY must be set.',
-  );
+// Lazy singleton — only created when actually used, not at module load time.
+// This prevents client-side crashes when env vars are missing or placeholder values.
+let _supabase: SupabaseClient | null = null;
+
+export function getSupabaseClient(): SupabaseClient | null {
+  if (!supabaseUrl || !supabaseAnonKey || supabaseAnonKey === 'eyJ...') {
+    return null;
+  }
+  if (!_supabase) {
+    _supabase = createClient(supabaseUrl, supabaseAnonKey);
+  }
+  return _supabase;
 }
 
-/**
- * Singleton Supabase client.
- * Import this wherever Realtime channel subscriptions are needed.
- */
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+// Keep named export for backward compatibility
+export const supabase = {
+  channel: (name: string) => getSupabaseClient()?.channel(name),
+  removeChannel: (channel: ReturnType<SupabaseClient['channel']>) =>
+    getSupabaseClient()?.removeChannel(channel),
+};
