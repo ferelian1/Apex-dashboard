@@ -39,7 +39,7 @@ import CreateColumnForm from './CreateColumnForm';
 import TaskDetailModal from './TaskDetailModal';
 import ErrorNotification from '@/components/shared/ErrorNotification';
 import type { BoardWithColumnsAndTasks, TaskWithDetails } from '@/types';
-import { getTaskWithDetails } from '@/lib/db/task';
+import { getTaskDetails } from '@/lib/actions/task';
 
 interface BoardViewProps {
   board: BoardWithColumnsAndTasks;
@@ -159,10 +159,10 @@ export default function BoardView({
   const handleTaskClick = useCallback(
     async (taskId: string) => {
       setSelectedTaskId(taskId);
-      const task = await getTaskWithDetails(taskId, currentUserId);
-      setSelectedTask(task);
+      const result = await getTaskDetails(taskId);
+      if (result.success) setSelectedTask(result.data);
     },
-    [currentUserId],
+    [],
   );
 
   // ── Active drag overlay items ──────────────────────────────────────────────
