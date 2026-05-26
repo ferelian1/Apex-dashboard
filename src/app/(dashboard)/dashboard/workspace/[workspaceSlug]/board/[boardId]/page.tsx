@@ -6,16 +6,16 @@
 
 import { auth } from '@clerk/nextjs/server';
 import { redirect, notFound } from 'next/navigation';
-import dynamic from 'next/dynamic';
+import nextDynamic from 'next/dynamic';
 import { db } from '@/lib/db/prisma';
 import { getBoardWithColumnsAndTasks } from '@/lib/db/board';
 import { requireWorkspaceMember } from '@/lib/services/clerk';
 import { BoardSkeleton } from '@/components/shared/LoadingSkeleton';
 
-export const dynamicRendering = 'force-dynamic';
+// Force dynamic rendering — this page queries the database per request
 export const dynamic = 'force-dynamic';
 
-const BoardView = dynamic(
+const BoardView = nextDynamic(
   () => import('@/components/kanban/BoardView'),
   {
     ssr: false,
