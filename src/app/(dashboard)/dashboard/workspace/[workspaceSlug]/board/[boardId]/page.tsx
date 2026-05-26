@@ -12,6 +12,9 @@ import { getBoardWithColumnsAndTasks } from '@/lib/db/board';
 import { requireWorkspaceMember } from '@/lib/services/clerk';
 import { BoardSkeleton } from '@/components/shared/LoadingSkeleton';
 
+export const dynamicRendering = 'force-dynamic';
+export const dynamic = 'force-dynamic';
+
 const BoardView = dynamic(
   () => import('@/components/kanban/BoardView'),
   {

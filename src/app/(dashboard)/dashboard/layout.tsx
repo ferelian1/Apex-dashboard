@@ -14,6 +14,8 @@ import Navbar from '@/components/shared/Navbar';
 import Sidebar from '@/components/shared/Sidebar';
 import DemoModeBanner from '@/components/shared/DemoModeBanner';
 
+export const dynamic = 'force-dynamic';
+
 export default async function DashboardLayout({
   children,
 }: {

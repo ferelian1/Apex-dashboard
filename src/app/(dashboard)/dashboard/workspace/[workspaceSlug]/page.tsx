@@ -9,6 +9,8 @@ import { redirect, notFound } from 'next/navigation';
 import Link from 'next/link';
 import { db } from '@/lib/db/prisma';
 
+export const dynamic = 'force-dynamic';
+
 interface WorkspacePageProps {
   params: { workspaceSlug: string };
 }
